@@ -71,7 +71,3 @@ A `mode` argument can be one of three constants (import them from `utils/constan
 - `ONCE_TILL_UNMOUNT` — behaves like `RESTART_ON_REMOUNT` but never runs the saga again.
 
 Now add as many sagas to your `saga.js` file as you want!
-
----
-
-_Don't like this feature? [Click here](remove.md)_

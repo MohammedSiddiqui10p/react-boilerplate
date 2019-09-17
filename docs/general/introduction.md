@@ -36,7 +36,7 @@ Here's a curated list of packages that you should be at least familiar with befo
 Note that while `react-boilerplate` includes a lot of features, many of them are optional and you can find instructions in the docs on how to remove...
 
 - [`redux-saga` or `reselect`](https://github.com/react-boilerplate/react-boilerplate/blob/master/docs/js/remove.md)
-- [offline-first, add to homescreen, performant web font loading and image optimisation](https://github.com/react-boilerplate/react-boilerplate/blob/master/docs/general/remove.md)
+- [performant web font loading and image optimisation](https://github.com/react-boilerplate/react-boilerplate/blob/master/docs/general/remove.md)
 - [`sanitize.css`](https://github.com/react-boilerplate/react-boilerplate/blob/master/docs/css/remove.md)
 - [i18n (i.e. `react-intl`)](https://github.com/react-boilerplate/react-boilerplate/blob/0f88f55ed905f8432c3dd7b452d713df5fb76d8e/docs/js/i18n.md#removing-i18n-and-react-intl)
 
@@ -167,53 +167,3 @@ This boilerplate includes a complete static code analysis setup. It's composed o
 We recommend that you install the relevant IDE extensions for each one of these tools. Once you do, every time you'll press save, all your code will be formatted and reviewed for quality automatically. (Read more at [editor.md](./editor.md).)
 
 We've also set up a git hook to automatically analyze and fix linting errors before your code is committed. If you'd like to disable it or modify its behavior, take a look at the `lint-staged` section in `package.json`.
-
-## Example App: Behind the scenes
-
-The react-boilerplate building blocks interoperate to produce a seamless application. Let's join these pieces together.
-
-<img src="workflow.png" alt="boilerplate workflow" align="center" />
-
-### Workflow
-
-The example application is a simple service which shows a list of repositories for GitHub users using GitHub's public API. You type in a username and the application will show you a list of repositories for that user. It also shows how navigating away to a different route can be done. You can switch between English and German by selecting the desired option from the menu in the footer.
-
-#### `<HomePage />`
-
-Run `npm start` to launch the application. If you start browsing at [https://localhost:3000](https://localhost:3000), by default you will be navigated to the home page. Here, notice that route is `"/"`, so the [`<HomePage />`](https://github.com/react-boilerplate/react-boilerplate/blob/master/app/containers/HomePage/index.js) container will be mounted. It is responsible for rendering a form with a textbox and a list of repositories.
-
-- `mapDispatchToProps()`: Generally, we provide outgoing action creators (functions that create [action](http://redux.js.org/docs/basics/Actions.html) objects) to the react component through this method. Notice that for every keypress in textbox, your state will be updated by dispatching a `changeUsername` action to the store. So at any point in time, your Redux state will hold the currently typed username. When you submit the form, another action, `loadRepos` will be dispatched.
-
-- `mapStateToProps()`: Generally, we provide incoming state from the Redux store to the react component through this method. Notice that we do not provide the entire state to the component, simply because we don't want the react component to have access to irrelevant data. The state will be filtered by selectors such as `selectRepos`, `selectUsername`, etc.
-
-Together these two methods work like magic. When you type something in the textbox the following things will happen in a sequential manner:
-
-1.  `changeUsername()` will send text to the Redux store. The text can be accessed using `evt.target.value`. Here, `evt` is the `onChange` event emitted by pressing a key.
-2.  The Redux store will consult with its corresponding reducer, since a reducer knows what to do with the data.
-3.  When a reducer computes a new state tree, the store will update its state with the newly typed data.
-4.  An update has occured in the state, therefore `mapStateToProps()` will be triggered and your react component will get the new data.
-5.  The updated data will be set as the `value` to your `<Input />`.
-
-_So you see, if you type something in the textbox, it will not be directly reflected in the DOM. It must pass through redux. Redux will update the state and return it to the component. It's the component's responsibility to show the updated data._
-
-#### `HomePage/saga.js`
-
-You must be wondering where does the list of repositories come from! Sagas are primarily used for making API calls. Sagas intercept actions dispatched to the Redux store. That means a saga will listen to the actions and if it finds an action of interest, it will do something.
-
-Sagas are nothing but ES6 [generator functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*). These functions act as normal functions, the only difference is that they can be "paused" and "resumed" at any point in time. `redux-saga` provides an intuitive, declarative API for managing asynchronous operations.
-
-Check out [`HomePage/saga.js`](https://github.com/react-boilerplate/react-boilerplate/blob/master/app/containers/HomePage/saga.js). It can be confusing for untrained eyes. The API of `redux-saga` is self-descriptive once you've seen it, so let's go over what happens in there:
-
-- You can `fork` a saga to send it to the background. That way, your code will not get blocked even when the saga is continuously running.
-- `takeLatest` is used for listening for a particular action. In this case, it will wait for a `LOAD_REPOS` action. Whenever you dispatch this action, the saga will understand that you want to fetch repos from github's public API by calling `getRepos()`.
-- If the API successfully returns some data, a `reposLoaded()` action will be dispatched which carries the data. When the Redux store receives this action, [a reducer](https://github.com/react-boilerplate/react-boilerplate/blob/master/app/containers/App/reducer.js) will set incoming data in the new state tree.
-
-_An update has occurred!_ `mapStateToProps()` will be triggered. `<HomePage />` will receive the new data and rerender.
-
-## Why all this fuss just to load a list of repos?
-
-Quite an understandable question!
-
-In the example app, we're basically using a [bazooka](https://en.wikipedia.org/wiki/Bazooka) to kill a fly. The primary purpose of this boilerplate is to provide a robust and scalable infrastructure for large scale projects. Every bit of your project should be predictable. You should have granular control over all the operations. It's overkill for the example app, but not for the real world.
-
-If you want to build a mature application you're going to need a mature infrastructure. That's what this boilerplate provides.

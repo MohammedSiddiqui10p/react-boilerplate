@@ -49,7 +49,6 @@ However, you can integrate the following by using the guides below:
 
 - [CSS Modules](#css-modules)
 - [Sass](#sass)
-- [LESS](#less)
 
 ## styled-components
 
@@ -222,62 +221,3 @@ function Button() {
 ```
 
 > For more information about Sass and the `sass-loader` see https://github.com/webpack-contrib/sass-loader
-
-## LESS
-
-### Setup
-
-Install `less-loader` and the `less` dependancy.
-
-```
-npm i -D less-loader less
-```
-
-Modify [`webpack.base.babel.js`][webpackconfig]
-to look like:
-
-```diff
-{
-- test: /\.css$/,
-+ test: /\.less$/,
-  exclude: /node_modules/,
-- use: ['style-loader', 'css-loader'],
-+ use: [
-+ 'style-loader',
-+ {
-+   loader: 'css-loader',
-+   options: {
-+     importLoaders: 1,
-+   },
-+ },
-+ 'less-loader',
-+],
-}
-```
-
-### Usage
-
-**`Button.less`**
-
-```less
-@error-color: red;
-
-.danger {
-  background-color: @error-color;
-}
-```
-
-**`Button.js`**
-
-```js
-import React from 'react';
-import './Button.less';
-
-function Button() {
-  return <button className="danger">Click me</button>;
-}
-```
-
-> For more information about LESS and the `less-loader` see https://github.com/webpack-contrib/less-loader.
-
-[webpackconfig]: ../../internals/webpack/webpack.base.babel.js 'Webpack config'
