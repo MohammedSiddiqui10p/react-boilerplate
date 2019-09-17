@@ -56,6 +56,9 @@ We use the [container/component architecture](https://medium.com/@dan_abramov/sm
 
 We've found that for many applications treating single pages (e.g. the LoginPage, the HomePage, etc.) as containers and their small parts (e.g. the Login form, the Navigation bar) as components works well, but there are no rigid rules. **Bend the architecture to the needs of your app, nothing is set in stone!**
 
+- `app/lib/`: A place for wrapping of third party libraries and services.
+- `app/services/`: A place for sharing business logic or re-usability of core data logic.
+
 ### `internals/`
 
 You can call this area the "engine" of your app. Your source code cannot be executed as-is in the web browser. It needs to pass through webpack to get converted into a version of Javascript that web browsers understand. While it's certainly helpful to understand what's happening here, for real world usage, you won't have to mess around with this folder much.
